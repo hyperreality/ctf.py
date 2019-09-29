@@ -1,9 +1,11 @@
-from collections import Counter
 import math
 import random
 import re
 import string
 import subprocess
+from collections import Counter
+from fractions import gcd
+from functools import reduce
 from OpenSSL import crypto
 from Crypto.PublicKey import RSA
 from Crypto.Util.number import long_to_bytes, bytes_to_long
@@ -128,6 +130,50 @@ def factorise(n):
                     factors.append(f)
 
     return [int(f) for f in factors]
+
+
+def is_coprime(a, b):
+    return gcd(a, b) == 1
+
+
+def isqrt(n):
+    x = n
+    y = (x + 1) // 2
+    while y < x:
+        x = y
+        y = (x + n // x) // 2
+    return x
+
+
+def mul_inv(a, b):
+    b0 = b
+    x0, x1 = 0, 1
+    if b == 1:
+        return 1
+    while a > 1:
+        q = a // b
+        a, b = b, a % b
+        x0, x1 = x1 - q * x0, x0
+    if x1 < 0:
+        x1 += b0
+    return x1
+
+
+def chinese_remainder(n, a):
+    sum = 0
+    prod = reduce(lambda a, b: a*b, n)
+    for n_i, a_i in zip(n, a):
+        p = prod // n_i
+        sum += a_i * mul_inv(p, n_i) * p
+    return sum % prod
+
+
+def totient(p, k):
+    """Euler's totient for prime powers
+    https://en.wikipedia.org/wiki/Euler%27s_totient_function#Value_for_a_prime_power_argument"""
+    if not is_prime(p):
+        raise Exception("p must be prime")
+    return pow(p, k-1)*(p-1)
 
 
 def ic(ctext):
