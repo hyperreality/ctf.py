@@ -1,4 +1,5 @@
 from ctf import *
+import binascii
 import os
 import unittest
 
@@ -70,6 +71,17 @@ class TestBasic(unittest.TestCase):
 
         self.assertEqual(long_to_bytes(t).decode('ascii'), "timctf{c0ngru3nc3s_4r3_s000o_c00l}")
 
+
+    def test_angstrom_xor(self):
+        # just to test drive the methods...
+        cipher = [chr(a) for a in binascii.unhexlify("fbf9eefce1f2f5eaffc5e3f5efc5efe9fffec5fbc5e9f9e8f3eaeee7")]
+
+        for i in range(256):
+            xored = xor_strings(cipher, chr(i), extend = True)
+            if printable(xored) and looks_like_english(xored, splitChar = "_"):
+                break
+
+        self.assertEqual(xored, "actf{hope_you_used_a_script}")
 
 
     @classmethod

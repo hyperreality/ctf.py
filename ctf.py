@@ -176,3 +176,61 @@ def find_keylen_ics(ctext, low=3, high=20, rows=5):
     print("%8s %8s" % ("keylen", "ic"))
     for k, v in best[:rows]:
         print("%8d %8.3f" % (k, v))
+
+
+def xor_strings(s1, s2, extend=False):
+    if extend:
+        if len(s1) < len(s2):
+            s1 = s1 * (len(s2)//len(s1) + 1)
+        else:
+            s2 = s2 * (len(s1)//len(s2) + 1)
+
+    return ''.join(chr(ord(a) ^ ord(b)) for a, b in zip(s1, s2))
+
+
+def printable(message, printablePercentage=80):
+    return (100 * [c in string.printable for c in message].count(True) / len(message)) > printablePercentage
+
+
+def looks_like_english(message, wordPercentage=20, letterPercentage=90, splitChar=" "):
+    """Credit: https://inventwithpython.com/hacking/chapter12.html
+
+    Will come up with a better function for CTFs when I'm feeling less lazy"""
+
+    def loadDictionary():
+        dictionaryFile = open('/usr/share/dict/words')
+        englishWords = {}
+        for word in dictionaryFile.read().split('\n'):
+            englishWords[word] = None
+        dictionaryFile.close()
+        return englishWords
+
+    ENGLISH_WORDS = loadDictionary()
+
+    def getEnglishCount(message, splitChar):
+        message = message.upper()
+        message = removeNonLetters(message, splitChar)
+        possibleWords = message.split(splitChar)
+
+        if possibleWords == []:
+            return 0.0  # no words at all, so return 0.0
+
+        matches = 0
+        for word in possibleWords:
+            if word in ENGLISH_WORDS:
+                matches += 1
+        return float(matches) / len(possibleWords)
+
+    def removeNonLetters(message, splitChar):
+        lettersOnly = []
+        for symbol in message:
+            if symbol in string.ascii_lowercase + string.ascii_uppercase + splitChar:
+                lettersOnly.append(symbol)
+        return ''.join(lettersOnly)
+
+    wordsMatch = getEnglishCount(message, splitChar) * 100 >= wordPercentage
+    numLetters = len(removeNonLetters(message, splitChar))
+    messageLettersPercentage = float(numLetters) / len(message) * 100
+    lettersMatch = messageLettersPercentage >= letterPercentage
+
+    return wordsMatch and lettersMatch
