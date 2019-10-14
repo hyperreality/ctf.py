@@ -63,11 +63,15 @@ def pqe2rsa(p, q, e):
 
 
 def read_rsa_key(path):
-    return RSA.importKey(open(path).read())
+    with open(path) as f:
+        key = f.read()
+    return RSA.importKey(key)
 
 
 def rsa_cert_to_key(path):
-    crtObj = crypto.load_certificate(crypto.FILETYPE_PEM, open(path).read())
+    with open(path) as f:
+        cert = f.read()
+    crtObj = crypto.load_certificate(crypto.FILETYPE_PEM, cert)
     pubKeyObject = crtObj.get_pubkey()
     pubKeyString = crypto.dump_publickey(crypto.FILETYPE_PEM, pubKeyObject)
     return pubKeyString
@@ -81,7 +85,7 @@ def factorise(n):
     """Extremely janky way to use yafu binary to find prime factors
 
     Need yafu binary in PATH"""
-    res = subprocess.run(["yafu", f"factor({n})"], stdout=subprocess.PIPE)
+    res = subprocess.run(["yafu", "factor(%s)" % n], stdout=subprocess.PIPE)
     output = res.stdout.decode('ascii').split("\n")
 
     factors = []

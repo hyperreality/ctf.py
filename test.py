@@ -42,7 +42,7 @@ class TestBasic(unittest.TestCase):
         key = RSA.importKey(pubKey)
         primes = factorise(key.n)
 
-        self.assertEqual(f"picoCTF{{{max(primes)},{min(primes)}}}", "picoCTF{73176001,67867967}")
+        self.assertEqual("picoCTF{%s,%s}" % (max(primes), min(primes)), "picoCTF{73176001,67867967}")
 
     def test_timisoara_three_keys(self):
         # Three Chinese spies are sent on a mission to a foreign country. The evil ruler of the country has taken three primes
