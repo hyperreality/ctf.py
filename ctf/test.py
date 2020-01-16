@@ -84,10 +84,5 @@ class TestBasic(unittest.TestCase):
         self.assertEqual(xored, "actf{hope_you_used_a_script}")
 
 
-    @classmethod
-    def tearDownClass(self):
-        os.system("rm siqs.dat factor.log session.log")  # cleanup yafu crap
-
-
 if __name__ == '__main__':
     unittest.main()

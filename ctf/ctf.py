@@ -1,5 +1,6 @@
 import gmpy2
 import math
+import os
 import random
 import re
 import string
@@ -85,8 +86,11 @@ def factorise(n):
     """Extremely janky way to use yafu binary to find prime factors
 
     Need yafu binary in PATH"""
-    res = subprocess.run(["yafu", "factor(%s)" % n], stdout=subprocess.PIPE)
-    output = res.stdout.decode('ascii').split("\n")
+    try:
+        res = subprocess.run(["yafu", "factor(%s)" % n], stdout=subprocess.PIPE)
+        output = res.stdout.decode('ascii').split("\n")
+    finally:
+        os.system("rm -f siqs.dat factor.log session.log") # cleanup yafu crap
 
     factors = []
 
