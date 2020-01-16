@@ -2,3 +2,6 @@ __pycache__
 *.pyc
 *.log
 *.dat
+dist
+build
+ctf.egg-info
