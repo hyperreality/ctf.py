@@ -192,6 +192,16 @@ def xor_strings(s1, s2, extend=False):
     return ''.join(chr(ord(a) ^ ord(b)) for a, b in zip(s1, s2))
 
 
+def english_words():
+    dirname = os.path.dirname(__file__)
+    dictionaryFile = os.path.join(dirname, 'words.txt')
+    englishWords = {}
+    with open(dictionaryFile) as f:
+        for word in f.read().split('\n'):
+            englishWords[word] = None
+    return englishWords
+
+
 def printable(message, printablePercentage=80):
     return (100 * [c in string.printable for c in message].count(True) / len(message)) > printablePercentage
 
@@ -201,20 +211,13 @@ def looks_like_english(message, wordPercentage=20, letterPercentage=90, splitCha
 
     Will come up with a better function for CTFs when I'm feeling less lazy"""
 
-    def loadDictionary():
-        dictionaryFile = open('/usr/share/dict/words')
-        englishWords = {}
-        for word in dictionaryFile.read().split('\n'):
-            englishWords[word] = None
-        dictionaryFile.close()
-        return englishWords
-
-    ENGLISH_WORDS = loadDictionary()
+    ENGLISH_WORDS = english_words()
 
     def getEnglishCount(message, splitChar):
         message = message.upper()
         message = removeNonLetters(message, splitChar)
-        possibleWords = message.split(splitChar)
+        possibleWords = [word.lower() for word in message.split(splitChar)]
+
 
         if possibleWords == []:
             return 0.0  # no words at all, so return 0.0

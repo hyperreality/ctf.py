@@ -7,7 +7,9 @@ setup(
       url='https://github.com/hyperreality/ctf',
       author='hyperreality',
       author_email='lt@codewordsolver.com',
-      packages=['ctf'],
+      packages=find_packages(),
+      package_data={'': ['words.txt']},
+      include_package_data=True,
       install_requires=['gmpy2', 'pycrypto', 'pyOpenSSL'],
 )
 
