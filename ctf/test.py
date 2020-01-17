@@ -1,6 +1,6 @@
 from ctf import *
 import binascii
-import os
+import shutil
 import unittest
 
 
@@ -13,7 +13,8 @@ class TestBasic(unittest.TestCase):
         self.assertTrue(is_prime(p))
 
     def test_picoCTF_b00tl3gRSA3(self):
-        os.system("rm -f siqs.dat")
+        if not shutil.which("yafu"):
+            raise unittest.SkipTest('Skipping test because yafu is not installed')
 
         c = 68314351483199977654946384393853074563137175387309013664593816524333713879763562856195772252861801193963796335416196969111653281954654162684862063297222141057658940446458737761243681346192579708122053687910434192910264989089423342249800858581014301542412393895095899954834526511764319374580052227259654552160850774493105215248164590726892832669
         n = 218642365016135028522886653880280975194280379243088300409155003677301609255320230380590573935430426989266640081919755246492346653444455408925356282584404123533457702991356294798307766977645155815241667308363278127329738614315036477499695742972751303946329882654551602359158734305692150627227407886346256913532205995208720741110608078672930395369
@@ -37,8 +38,12 @@ class TestBasic(unittest.TestCase):
                          "picoCTF{too_many_fact0rs_6542458}")
 
     def test_picoCTF_john_pollard(self):
+        if not shutil.which("yafu"):
+            raise unittest.SkipTest('Skipping test because yafu is not installed')
 
-        pubKey = rsa_cert_to_key("test_data/picoctf_cert")
+        dirname = os.path.dirname(__file__)
+        filename = os.path.join(dirname, 'test_data/picoctf_cert')
+        pubKey = rsa_cert_to_key(filename)
 
         key = RSA.importKey(pubKey)
         primes = factorise(key.n)

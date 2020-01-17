@@ -8,6 +8,6 @@ setup(
       author='hyperreality',
       author_email='lt@codewordsolver.com',
       packages=['ctf'],
-      install_requires=['gmpy2', 'pyOpenSSL'],
+      install_requires=['gmpy2', 'pycrypto', 'pyOpenSSL'],
 )
 
