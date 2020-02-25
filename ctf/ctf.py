@@ -78,6 +78,49 @@ def rsa_cert_to_key(path):
     return pubKeyString
 
 
+def rsa_recover_primes(n, e, d):
+    """Recover p and q when d is known
+    https://crypto.stackexchange.com/a/62487
+    """ 
+    k = e * d - 1
+    s = 0
+    t = k
+
+    while t % 2 == 0:
+        t = t // 2
+        s += 1
+
+    i = s
+    a = 2
+
+    assert 2**s * t == k
+
+    p, q = None, None
+
+    while True:
+        b = pow(a,t,n)
+
+        if b == 1:
+            a = gmpy2.next_prime(a)
+            continue
+
+        while i != 1:
+            c = pow(b,2,n)
+            if c == 1:
+                break
+            else:
+                b = c
+                i -= 1
+
+        if b == n - 1:
+            a = gmpy2.next_prime(a)
+            continue
+
+        p = math.gcd(b-1, n)
+        q = n // p
+        return p, q
+
+
 def is_prime(n):
     return gmpy2.is_prime(n)
 
