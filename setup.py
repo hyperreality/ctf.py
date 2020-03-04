@@ -10,6 +10,6 @@ setup(
       packages=find_packages(),
       package_data={'': ['words.txt']},
       include_package_data=True,
-      install_requires=['gmpy2', 'pycrypto', 'pyOpenSSL'],
+      install_requires=['gmpy2', 'pycryptodome', 'pyOpenSSL'],
 )
 
