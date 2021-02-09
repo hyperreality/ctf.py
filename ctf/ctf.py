@@ -3,6 +3,7 @@ import math
 import os
 import random
 import re
+import requests
 import string
 import subprocess
 from collections import Counter
@@ -10,7 +11,10 @@ from fractions import gcd
 from functools import reduce
 from OpenSSL import crypto
 from Crypto.PublicKey import RSA
-from Crypto.Util.number import long_to_bytes, bytes_to_long
+from Crypto.Util.number import long_to_bytes, bytes_to_long, inverse
+
+
+ALPHANUMERIC = string.ascii_letters + string.digits
 
 
 def chunks(l, n):
@@ -31,33 +35,12 @@ def partition(l, n):
     return cols
 
 
-def egcd(a, b):
-    """Extended Euclidean algorithm"""
-    """https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm"""
-    x, y, u, v = 0, 1, 1, 0
-    while a != 0:
-        q, r = b // a, b % a
-        m, n = x - u * q, y - v * q
-        b, a, x, y, u, v = a, r, u, v, m, n
-    return b, x, y
-
-
-def modinv(e, m):
-    """Modular multiplicative inverse"""
-    """https://en.wikipedia.org/wiki/Modular_multiplicative_inverse"""
-    g, x, y = egcd(e, m)
-    if g != 1:
-        return None
-    else:
-        return x % m
-
-
 def pqe2rsa(p, q, e):
     """Generate an RSA private key from p, q and e"""
     from Crypto.PublicKey import RSA
     n = p * q
     phi = (p - 1) * (q - 1)
-    d = modinv(e, phi)
+    d = inverse(e, phi)
     key_params = (long(n), long(e), long(d), long(p), long(q))
     priv_key = RSA.construct(key_params)
     return priv_key.exportKey()
@@ -81,7 +64,7 @@ def rsa_cert_to_key(path):
 def rsa_recover_primes(n, e, d):
     """Recover p and q when d is known
     https://crypto.stackexchange.com/a/62487
-    """ 
+    """
     k = e * d - 1
     s = 0
     t = k
@@ -237,7 +220,7 @@ def xor_strings(s1, s2, extend=False):
 
 def english_words():
     dirname = os.path.dirname(__file__)
-    dictionaryFile = os.path.join(dirname, 'words.txt')
+    dictionaryFile = os.path.join(dirname, 'files/words.txt')
     englishWords = {}
     with open(dictionaryFile) as f:
         for word in f.read().split('\n'):
@@ -284,3 +267,26 @@ def looks_like_english(message, wordPercentage=20, letterPercentage=90, splitCha
     lettersMatch = messageLettersPercentage >= letterPercentage
 
     return wordsMatch and lettersMatch
+
+
+def bip39():
+    with open('files/bip39.txt') as f:
+        words = [a.strip() for a in f.readlines()]
+    return words
+
+
+def all_links(url):
+    from bs4 import BeautifulSoup, SoupStrainer
+
+    response = requests.get(url)
+
+    rel = []
+    for link in BeautifulSoup(response.text, parse_only=SoupStrainer('a'), features="lxml"):
+        if hasattr(link, 'href'):
+            try:
+                rel.append(link['href'])
+            except KeyError:
+                pass
+
+    return rel
+

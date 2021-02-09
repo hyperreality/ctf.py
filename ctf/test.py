@@ -30,7 +30,7 @@ class TestBasic(unittest.TestCase):
         phi = 1
         for p in primes:
             phi *= (p - 1)
-        d = modinv(e, phi)
+        d = inverse(e, phi)
 
         p = pow(c, d, n)
 
@@ -69,8 +69,8 @@ class TestBasic(unittest.TestCase):
         n3 = pow(p3, 4)
 
         c1 = t1
-        c2 = pow(t2, modinv(2019, totient(p2, 4)), n2)
-        c3 = pow(t3, modinv(2019**2019, totient(p3, 4)), n3)
+        c2 = pow(t2, inverse(2019, totient(p2, 4)), n2)
+        c3 = pow(t3, inverse(2019**2019, totient(p3, 4)), n3)
 
         t = chinese_remainder([n1, n2, n3], [c1, c2, c3])
 
@@ -89,7 +89,7 @@ class TestBasic(unittest.TestCase):
         self.assertEqual(xored, "actf{hope_you_used_a_script}")
 
 
-    def test_bla(self):
+    def test_hacktm_quals_bad_keys(self):
         e, n = (65537, 2318553827267041599931064141028026591078453523755133761420994537426231546233197332557815088229590256567177621743082082713100922775483908922217521567861530205737139513575691852244362271068595653732088709994411183164926098663772268120044065766077197167667585331637038825079142327613226776540743407081106744519)
         ct = 2255296633936604604490193777189642999170921517383872458719910324954614900683697288325565056935796303372973284169167013060432104141786712034296127844869460366430567132977266285093487512605926172985342614713659881511775812329365735530831957367531121557358020217773884517112603921006673150910870383826703797655
 
@@ -106,10 +106,15 @@ class TestBasic(unittest.TestCase):
             if p * q == n:
                 break
         phi = (p - 1) * (q - 1)
-        d = modinv(e, phi)
+        d = inverse(e, phi)
         pt = pow(ct, d, n)
 
         self.assertEqual(long_to_bytes(pt).decode('ascii'), 'HackTM{SanTa_ple@s3_TakE_mE_0ff_yOur_l1st_4f2d20ec18}')
+
+
+    def test_all_links_on_page(self):
+        links = all_links("https://example.com")
+        self.assertEqual(links, ['https://www.iana.org/domains/example'])
 
 
 if __name__ == '__main__':
