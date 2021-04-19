@@ -4,6 +4,7 @@ import os
 import re
 import subprocess
 from functools import reduce
+from sage.all import *
 from OpenSSL import crypto
 from Crypto.PublicKey import RSA
 from Crypto.Util.number import long_to_bytes, bytes_to_long, inverse
@@ -82,29 +83,7 @@ def is_prime(n):
 
 
 def factorise(n):
-    """Extremely janky way to use yafu binary to find prime factors
-
-    Need yafu binary in PATH"""
-    try:
-        res = subprocess.run(["yafu", "factor(%s)" %
-                              n], stdout=subprocess.PIPE)
-        output = res.stdout.decode('ascii').split("\n")
-    finally:
-        os.system("rm -f siqs.dat factor.log session.log")  # cleanup yafu crap
-
-    factors = []
-
-    for line in output:
-        z = re.match("[P|C]\d+ = (.*)", line)
-        if z:
-            factor = int(z.group(1))
-            if is_prime(factor):
-                factors.append(factor)
-            else:
-                for f in factorise(factor):
-                    factors.append(f)
-
-    return [int(f) for f in factors]
+    return ecm.factor(n)
 
 
 def is_coprime(a, b):

@@ -1,10 +1,21 @@
 from ctf import *
 import binascii
 import shutil
+import string
 import unittest
 
 
 class TestBasic(unittest.TestCase):
+    def test_caesar(self):
+        ct = "OCLQT CPFTG YCU JCPIGF YJKNG YGCTKPI VJG HWNNFTGUU WPKHQTO QH C DTKVKUJ QHHKEGT"
+        pt = "MAJOR ANDRE WAS HANGED WHILE WEARING THE FULLDRESS UNIFORM OF A BRITISH OFFICER".replace(' ', '')
+        shifted = caesar(ct, 24, alpha=string.ascii_uppercase)
+        self.assertEqual(shifted, pt)
+        nums = letters_to_nums(ct.replace(' ', '').lower())
+        shifted = caesar_nums(nums, 24)
+        out = nums_to_letters(shifted)
+        self.assertEqual(out, pt.lower())
+
     def test_millerrabin(self):
         n = 1641117189524860342313448880785985676983479
         p = 16912473451

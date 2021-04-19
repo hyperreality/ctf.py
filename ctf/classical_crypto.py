@@ -4,6 +4,30 @@ from collections import Counter
 from utils import *
 
 
+def caesar(inp, amount, alpha=string.ascii_lowercase):
+    return "".join([alpha[(alpha.index(i)+amount) % len(alpha)] for i in inp if i in alpha])
+
+
+def caesar_nums(inp, amount):
+    return [(i+amount) % 26 for i in inp]
+
+
+def nums_to_letters(arr, alpha=string.ascii_lowercase):
+    return "".join([alpha[n % len(alpha)] for n in arr])
+
+
+def letters_to_nums(arr, alpha=string.ascii_lowercase):
+    return [alpha.index(n) % len(alpha) for n in arr]
+
+
+def all_shifts(inp):
+    return [caesar_nums(inp, i) for i in range(26)]
+
+
+def rotate(wheel, amount):
+    return wheel[amount:] + wheel[:amount]
+
+
 def ic(ctext):
     """index of coincidence
     0.067 is close to English"""
